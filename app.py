@@ -5,6 +5,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+from random import randrange
 import datetime
 
 
@@ -19,8 +20,18 @@ firebase_admin.initialize_app(cred, {'databaseURL': 'https://say-today-default-r
 class Sayings(Resource):
     # get random sayings
     def get(self):
-        dir = db.reference('sayings')
-        res = {'message': f'{dir.get()}'}
+        res = {}
+
+        dir = db.reference('system/next-id')
+        next_id = dir.get()
+
+        if next_id == 1:
+            res['message'] = 'There is no saying...'
+        else:
+            selected_id = randrange(1, next_id)
+            dir = db.reference(f'sayings/{selected_id}')
+            res['message'] = f"{dir.get()['message']}"
+        
         return jsonify(res)
     
     # post saying
@@ -32,7 +43,7 @@ class Sayings(Resource):
         dir.update({'next-id': next_id + 1})
 
         data = {
-            'sayings': payload['saying'],
+            'message': payload['saying'],
             'datetime': datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             'up': 0,
             'down': 0
