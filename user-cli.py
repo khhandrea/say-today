@@ -1,17 +1,24 @@
+import sys
 import requests
 
 def sayings_get():
-    res = requests.get('http://localhost:5000/sayings')
+    global url
+    res = requests.get(f'{url}/sayings')
     return res.json()['message']
 
 def sayings_post(saying):
+    global url
     data = {'saying': saying}
     res = requests.post(
-        'http://localhost:5000/sayings',
+        f'{url}/sayings',
         json=data)
     print(f'upload succefully with status code {res.status_code}.')
 
 if __name__ == '__main__':
+    url = 'localhost:5000'
+    if len(sys.argv) == 2:
+        url = sys.argv[1]
+        
     while True:
         print('hello! say me anything : ', end='')
         user_input = input()

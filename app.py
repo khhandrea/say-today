@@ -16,7 +16,7 @@ api = Api(app, version='1.0', title='say today API', description='Endpoint API o
 sayings = api.namespace('sayings', description='get or post sayings')
 
 model = api.model('Model', {
-    'message': fields.String
+    'saying': fields.String
 })
 
 @api.route('/sayings')
